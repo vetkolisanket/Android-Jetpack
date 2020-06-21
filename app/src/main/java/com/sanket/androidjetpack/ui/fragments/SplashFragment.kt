@@ -2,12 +2,16 @@ package com.sanket.androidjetpack.ui.fragments
 
 import android.os.Bundle
 import android.os.Handler
+import android.preference.PreferenceManager
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.navigation.fragment.findNavController
 import com.sanket.androidjetpack.R
+import com.sanket.androidjetpack.isUserLoggedIn
+import com.sanket.androidjetpack.ui.activities.MainActivity
 
 /**
  * A simple [Fragment] subclass.
@@ -20,6 +24,15 @@ class SplashFragment : Fragment() {
         super.onCreate(savedInstanceState)
         arguments?.let {
         }
+
+        val backPressCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                // do nothing
+            }
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(this, backPressCallback)
+
     }
 
     override fun onCreateView(
@@ -32,7 +45,15 @@ class SplashFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Handler().postDelayed({ findNavController().navigate(R.id.loginFragment) }, 2000)
+        Handler().postDelayed({ redirectToAppropriateFragment() }, 2000)
+    }
+
+    private fun redirectToAppropriateFragment() {
+        if (isUserLoggedIn()) {
+            findNavController().navigate(R.id.homeFragment)
+        } else {
+             findNavController().navigate(R.id.loginFragment)
+        }
     }
 
     companion object {
