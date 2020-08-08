@@ -1,7 +1,13 @@
 package com.sanket.androidjetpack
 
 import android.content.SharedPreferences
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
 import com.sanket.androidjetpack.ui.activities.MainActivity
 
 /**
@@ -45,4 +51,24 @@ inline fun <reified T> SharedPreferences.put(key: String, value: T): Boolean {
     }
 
     return editor.commit()
+}
+
+fun ImageView.load(url: String) {
+    Glide.with(this)
+        .load(url)
+        .into(this)
+}
+
+fun ViewGroup.inflate(@LayoutRes resId: Int): View = LayoutInflater.from(this.context).inflate(resId, this, false)
+
+fun View.show() {
+    visibility = View.VISIBLE
+}
+
+fun View.hide() {
+    visibility = View.GONE
+}
+
+fun View.invisible() {
+    visibility = View.INVISIBLE
 }

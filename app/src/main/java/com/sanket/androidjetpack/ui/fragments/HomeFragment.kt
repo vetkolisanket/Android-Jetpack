@@ -5,8 +5,25 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.sanket.androidjetpack.R
+import com.sanket.androidjetpack.hide
+import com.sanket.androidjetpack.models.User
+import com.sanket.androidjetpack.network.ApiHelper
+import com.sanket.androidjetpack.network.RetrofitBuilder
+import com.sanket.androidjetpack.show
+import com.sanket.androidjetpack.ui.adapters.MainAdapter
+import com.sanket.androidjetpack.utils.Status
+import com.sanket.androidjetpack.utils.Status.*
+import com.sanket.androidjetpack.view_models.MainViewModel
+import com.sanket.androidjetpack.view_models.ViewModelFactory
+import kotlinx.android.synthetic.main.fragment_home.*
 
 /**
  * A simple [Fragment] subclass.
@@ -14,6 +31,17 @@ import com.sanket.androidjetpack.R
  * create an instance of this fragment.
  */
 class HomeFragment : Fragment() {
+
+    private val viewModel by lazy {
+        ViewModelProviders.of(
+            this, ViewModelFactory(
+                ApiHelper(
+                    RetrofitBuilder.apiService
+                )
+            )
+        ).get(MainViewModel::class.java)
+    }
+    private val adapter by lazy { MainAdapter(mutableListOf()) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,15 +55,55 @@ class HomeFragment : Fragment() {
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(this, backPressCallback)
-
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initUi()
+        initObservers()
+    }
+
+    private fun initObservers() {
+        viewModel.getUsers().observe(viewLifecycleOwner, Observer {
+            it?.let { resource ->
+                when (resource.status) {
+                    SUCCESS -> {
+                        recyclerView.show()
+                        progressBar.hide()
+                        resource.data?.let { users -> retrieveList(users) }
+                    }
+                    ERROR -> {
+                        recyclerView.show()
+                        progressBar.hide()
+                        Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG).show();
+                    }
+                    LOADING -> {
+                        recyclerView.hide()
+                        progressBar.show()
+                    }
+                }
+            }
+        })
+    }
+
+    private fun initUi() {
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        recyclerView.addItemDecoration(DividerItemDecoration(requireContext(), (recyclerView.layoutManager as LinearLayoutManager).orientation))
+        recyclerView.adapter = adapter
+    }
+
+    private fun retrieveList(users: List<User>) {
+        adapter.apply {
+            addUsers(users)
+            notifyDataSetChanged()
+        }
     }
 
     companion object {
