@@ -7,6 +7,6 @@ import com.sanket.androidjetpack.network.ApiHelper
  */
 class MainRepository(private val apiHelper: ApiHelper) {
 
-    suspend fun getUsers() = apiHelper.getUsers()
+    suspend fun getAnswers(page: Int, pageSize: Int, site: String) = apiHelper.getAnswers(page, pageSize, site)
 
 }

@@ -6,20 +6,20 @@ import androidx.recyclerview.widget.RecyclerView
 import com.sanket.androidjetpack.R
 import com.sanket.androidjetpack.inflate
 import com.sanket.androidjetpack.load
-import com.sanket.androidjetpack.models.User
+import com.sanket.androidjetpack.models.daos.Answer
 import kotlinx.android.synthetic.main.item_main.view.*
 
 /**
  * Created by Sanket on 07/08/20.
  */
-class MainAdapter(private val users: MutableList<User>): RecyclerView.Adapter<MainAdapter.DataViewHolder>() {
+class MainAdapter(private val answers: MutableList<Answer>): RecyclerView.Adapter<MainAdapter.DataViewHolder>() {
 
     class DataViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun bind(user: User) {
+        fun bind(answer: Answer) {
             itemView.apply {
-                textViewUserName.text = user.name
-                textViewUserEmail.text = user.email
-                imageViewAvatar.load(user.avatar)
+                tvUserName.text = answer.owner.displayName
+                tvAnswerId.text = answer.answerId.toString()
+                ivAvatar.load(answer.owner.profileImage)
             }
         }
     }
@@ -28,16 +28,16 @@ class MainAdapter(private val users: MutableList<User>): RecyclerView.Adapter<Ma
         return DataViewHolder(parent.inflate(R.layout.item_main))
     }
 
-    override fun getItemCount(): Int = users.size
+    override fun getItemCount(): Int = answers.size
 
     override fun onBindViewHolder(holder: DataViewHolder, position: Int) {
-        holder.bind(users[position])
+        holder.bind(answers[position])
     }
 
-    fun addUsers(users: List<User>) {
-        this.users.apply {
+    fun addAnswers(answers: List<Answer>) {
+        this.answers.apply {
             clear()
-            addAll(users)
+            addAll(answers)
         }
     }
 

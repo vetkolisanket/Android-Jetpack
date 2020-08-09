@@ -11,17 +11,15 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.sanket.androidjetpack.R
 import com.sanket.androidjetpack.hide
-import com.sanket.androidjetpack.models.User
+import com.sanket.androidjetpack.models.daos.Answer
 import com.sanket.androidjetpack.network.ApiHelper
 import com.sanket.androidjetpack.network.RetrofitBuilder
 import com.sanket.androidjetpack.show
 import com.sanket.androidjetpack.ui.adapters.MainAdapter
-import com.sanket.androidjetpack.utils.Status
 import com.sanket.androidjetpack.utils.Status.*
-import com.sanket.androidjetpack.view_models.MainViewModel
+import com.sanket.androidjetpack.view_models.HomeViewModel
 import com.sanket.androidjetpack.view_models.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_home.*
 
@@ -39,7 +37,7 @@ class HomeFragment : Fragment() {
                     RetrofitBuilder.apiService
                 )
             )
-        ).get(MainViewModel::class.java)
+        ).get(HomeViewModel::class.java)
     }
     private val adapter by lazy { MainAdapter(mutableListOf()) }
 
@@ -77,7 +75,7 @@ class HomeFragment : Fragment() {
                     SUCCESS -> {
                         recyclerView.show()
                         progressBar.hide()
-                        resource.data?.let { users -> retrieveList(users) }
+                        resource.data?.let { answers -> retrieveList(answers) }
                     }
                     ERROR -> {
                         recyclerView.show()
@@ -99,9 +97,9 @@ class HomeFragment : Fragment() {
         recyclerView.adapter = adapter
     }
 
-    private fun retrieveList(users: List<User>) {
+    private fun retrieveList(answers: List<Answer>) {
         adapter.apply {
-            addUsers(users)
+            addAnswers(answers)
             notifyDataSetChanged()
         }
     }
