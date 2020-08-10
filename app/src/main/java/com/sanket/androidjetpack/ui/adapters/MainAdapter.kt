@@ -2,6 +2,8 @@ package com.sanket.androidjetpack.ui.adapters
 
 import android.view.View
 import android.view.ViewGroup
+import androidx.paging.PagedListAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.sanket.androidjetpack.R
 import com.sanket.androidjetpack.inflate
@@ -12,14 +14,17 @@ import kotlinx.android.synthetic.main.item_main.view.*
 /**
  * Created by Sanket on 07/08/20.
  */
-class MainAdapter(private val answers: MutableList<Answer>): RecyclerView.Adapter<MainAdapter.DataViewHolder>() {
+class MainAdapter(private val answers: MutableList<Answer>): PagedListAdapter<Answer, MainAdapter.DataViewHolder>(
+    DIFF_CALLBACK) {
 
-    class DataViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun bind(answer: Answer) {
-            itemView.apply {
-                tvUserName.text = answer.owner.displayName
-                tvAnswerId.text = answer.answerId.toString()
-                ivAvatar.load(answer.owner.profileImage)
+    companion object {
+        val DIFF_CALLBACK = object: DiffUtil.ItemCallback<Answer>() {
+            override fun areItemsTheSame(oldItem: Answer, newItem: Answer): Boolean {
+                return oldItem.answerId == newItem.answerId
+            }
+
+            override fun areContentsTheSame(oldItem: Answer, newItem: Answer): Boolean {
+                return oldItem == newItem
             }
         }
     }
@@ -38,6 +43,16 @@ class MainAdapter(private val answers: MutableList<Answer>): RecyclerView.Adapte
         this.answers.apply {
             clear()
             addAll(answers)
+        }
+    }
+
+    class DataViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        fun bind(answer: Answer) {
+            itemView.apply {
+                tvUserName.text = answer.owner.displayName
+                tvAnswerId.text = answer.answerId.toString()
+                ivAvatar.load(answer.owner.profileImage)
+            }
         }
     }
 

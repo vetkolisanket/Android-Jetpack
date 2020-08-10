@@ -31,13 +31,8 @@ import kotlinx.android.synthetic.main.fragment_home.*
 class HomeFragment : Fragment() {
 
     private val viewModel by lazy {
-        ViewModelProviders.of(
-            this, ViewModelFactory(
-                ApiHelper(
-                    RetrofitBuilder.apiService
-                )
-            )
-        ).get(HomeViewModel::class.java)
+        ViewModelProviders.of(this, ViewModelFactory(ApiHelper(RetrofitBuilder.apiService)))
+            .get(HomeViewModel::class.java)
     }
     private val adapter by lazy { MainAdapter(mutableListOf()) }
 
@@ -69,7 +64,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun initObservers() {
-        viewModel.getUsers().observe(viewLifecycleOwner, Observer {
+        /*viewModel.getUsers().observe(viewLifecycleOwner, Observer {
             it?.let { resource ->
                 when (resource.status) {
                     SUCCESS -> {
@@ -88,6 +83,9 @@ class HomeFragment : Fragment() {
                     }
                 }
             }
+        })*/
+        viewModel.answerPagedList.observe(viewLifecycleOwner, Observer {
+            adapter.submitList(it)
         })
     }
 
