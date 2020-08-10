@@ -3,6 +3,7 @@ package com.sanket.androidjetpack.view_models
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
+import androidx.lifecycle.viewModelScope
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PageKeyedDataSource
 import androidx.paging.PagedList
@@ -28,7 +29,7 @@ class HomeViewModel(private val mainRepository: MainRepository) : ViewModel() {
     private val liveDataSource: LiveData<PageKeyedDataSource<Int, Answer>>
 
     init {
-        val answerDataSourceFactory = AnswerDataSourceFactory()
+        val answerDataSourceFactory = AnswerDataSourceFactory(viewModelScope)
         liveDataSource = answerDataSourceFactory.answerLiveDataSource
         val config = PagedList.Config.Builder()
             .setEnablePlaceholders(false)
